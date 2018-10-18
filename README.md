@@ -17,3 +17,9 @@ https://www.google.com/get/noto/
 でPDFが生成されます。
 
 TeXLive 2018以前での動作は確認できておりません。
+
+2018/10/18追記
+TexLive2018以前ではlatexmkにpdfluaのオプションがありません。
+BasicTexなどの簡易版ではパッケージ不足でエラーとなります。
+
+
