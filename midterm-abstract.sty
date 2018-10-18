@@ -1,0 +1,50 @@
+﻿%% midterm-abstract.sty 
+%% Copyright 2018 Takeie Torinomi 
+% 
+% This work is based on:
+%
+%	卒論要旨スタイルファイル	
+%	2018/1/24 Hiromu Sekiguchi
+%
+
+\usepackage[headheight=10truept, top=20truemm,bottom=20truemm,left=20truemm,right=20truemm]{geometry}
+\columnsep 10truemm
+\columnseprule 0mm
+\usepackage{indentfirst}
+\usepackage{setspace}
+\setstretch{0.9}
+
+% ページ数を非表示にする場合は以下をコメントアウト
+% \renewcommand{\thepage}{}
+
+% フォントの設定
+\usepackage[noto-otf, deluxe]{luatexja-preset}
+\usepackage{newtxmath, newtxtext}
+
+% タイトルの設定
+\makeatletter
+\def\@maketitle{\newpage
+  \null
+  {\raggedright\fontsize{10truept}{1pt}\selectfont\rmfamily\bfseries \thesisnumber\\[1em]}
+  {\centering
+    {\fontsize{14truept}{0pt}\selectfont \gtfamily\sffamily\bfseries \@title}
+    \vskip 1.5em
+    {\fontsize{14truept}{0pt}\selectfont \rmfamily\bfseries \englishtitle}
+    \vskip 1.5em
+    {\fontsize{12truept}{1pt}\selectfont\gtfamily\sffamily\bfseries
+    \begin{tabular}[t]{c}\@author
+    \end{tabular}\par}%
+    \vskip 1em
+    \par
+  } 
+}
+
+% 節タイトルの設定
+\usepackage{secdot}
+\def\section{\@startsection{section}{1}{\z@}{1.ex plus 1.5ex minus 0ex}{0.ex plus 0.ex minus 0ex}{\normalsize \gtfamily\bfseries\sffamily}}
+\def\subsection{\@startsection{subsection}{2}{\z@}{1ex plus 1.5ex minus 0.5ex}{0ex plus 0ex}{\normalsize \gtfamily\bfseries\sffamily}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{1ex plus 1.5ex minus .5ex}{0ex plus 0ex}{\normalsize \gtfamily\bfseries\sffamily}}
+\makeatother
+
+\renewcommand{\thesection}{\arabic{section}}
+\setlength\belowcaptionskip{-0pt}
