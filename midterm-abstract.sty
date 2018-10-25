@@ -1,9 +1,9 @@
-﻿%% midterm-abstract.sty 
-%% Copyright 2018 Takeie Torinomi 
-% 
+﻿%% midterm-abstract.sty
+%% Copyright 2018 Takeie Torinomi
+%
 % This work is based on:
 %
-%	卒論要旨スタイルファイル	
+%	卒論要旨スタイルファイル
 %	2018/1/24 Hiromu Sekiguchi
 %
 
@@ -15,7 +15,7 @@
 \setstretch{0.9}
 
 % ページ数を非表示にする場合は以下をコメントアウト
-% \renewcommand{\thepage}{}
+\renewcommand{\thepage}{}
 
 % フォントの設定
 \usepackage[noto-otf, deluxe]{luatexja-preset}
@@ -36,15 +36,18 @@
     \end{tabular}\par}%
     \vskip 1em
     \par
-  } 
+  }
 }
+\makeatother
 
 % 節タイトルの設定
 \usepackage{secdot}
-\def\section{\@startsection{section}{1}{\z@}{1.ex plus 1.5ex minus 0ex}{0.ex plus 0.ex minus 0ex}{\normalsize \gtfamily\bfseries\sffamily}}
-\def\subsection{\@startsection{subsection}{2}{\z@}{1ex plus 1.5ex minus 0.5ex}{0ex plus 0ex}{\normalsize \gtfamily\bfseries\sffamily}}
-\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{1ex plus 1.5ex minus .5ex}{0ex plus 0ex}{\normalsize \gtfamily\bfseries\sffamily}}
-\makeatother
-
+\usepackage{titlesec}
+\titleformat*{\section}{\normalsize \gtfamily\bfseries\sffamily}
+\titleformat*{\subsection}{\normalsize \gtfamily\bfseries\sffamily}
+\titleformat*{\subsubsection}{\normalsize \gtfamily\bfseries\sffamily}
+\titlespacing*{\section}{0ex}{\zh}{0ex}
+\titlespacing*{\subsection}{0ex}{\zh}{0ex}
+\titlespacing*{\subsubsection}{0ex}{\zh}{0ex}
 \renewcommand{\thesection}{\arabic{section}}
 \setlength\belowcaptionskip{-0pt}
