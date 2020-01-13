@@ -6,25 +6,81 @@
 \usepackage{./midterm-abstract}
 % Lualatexの処理系の問題で、siunitxを使う場合は\usepackage{./midterm-abstract}の後にusepackageする
 \usepackage[detect-all]{siunitx}
+\usepackage{cleveref}
 
 \def\thesisnumber{2018-XX-YY}
 \title{和文題目}
 \def\englishtitle{English Title}
 \author{8ZZZZZZZ 慶應太郎 (Taro Keio)　Supervisor: 矢上諭吉 (Yukichi Yagami)}
+
 \begin{document}
 \maketitle
-\section{緒論}
-レイアウトと文字サイズ等について示す．
-左右余白は20mm，上下余白は20mmとする．
+\section{Introduction}
+Due to the dramatic increase in the number of connected and mobile communication devices, collecting and sending even more data than ever before has supported the growth of new technological areas, such as big data analysis and machine intelligence (a.k.a artificial intelligence).
+Behind this spectacular growth, we are facing a significant challenge; data traffic expected to grow continuously, from \SI{122}{EB} per month in 2017 to a predicted \SI{396}{EB} in 2022 \cite{cisco}.
+Also, traffic from wireless and mobile devices predicted to increase, from 52\% in 2017 to a predicted 71\% in 2022; satisfying greater spectral efficiency to enable even higher data rates and energy efficiency and low latency with the current wireless bands are critical, however impossible.
 
-題目は，1段組で中央配置とし，ゴシック，太字，14ptとする．
-下に適当な間隔を開け英文題目を記載する．
-さらにその下に適当な間隔を開け，学籍番号（半角），氏名（欧文），Supervisor 教員氏名（欧文）をゴシック，太字，12ptで1段組，中央配置で記載する（欧文字もゴシック）．
+The International Telecommunication Union (ITU) defines a broad range of radio bands in its radio regulations,
+from extremely-low frequency (ELF) band starting from 3--\SI{30}{Hz} to tremendously-high-frequency band at 300--\SI{3000}{GHz}.
+Still, almost all current communication relies on the ultra-high frequency (UHF) at 300--\SI{3000}{MHz}, due to its convenient characteristics; penetrating foliage and buildings for indoor reception.
+However, this UHF band is overloaded, many tweaks already introduced to use its bandwidth to the limit. 
+Hence, they will not be able to handle the increase in traffic, as mentioned above.
 
-その下に適当な間隔を開け，本文を記載する．
-本文は，2段組，明朝，9pt，1行27字程度，1コラム55～60行程度を標準とする．
-章は，9pt，ゴシック，太字，左寄り印刷とする．
-節と項は，9pt，ゴシック，太字，左寄り印刷とする．
-英数字は，Timesを用いることを基本とする．
-字体に意味がある場合（ベクトルなど）には，この限りではない．
+Recently there has been a focused adoption of fifth-generation (5G) network, using millimetre waves or super-high to extremely-high frequencies; many countries are rushing for 5G as if it is the silver bullet to solve this problem.
+However, since the vital challenges to adopting the millimetre waves, and due to many regulations with 5G, already a post-millimetre-wave communication utilising our oldest method for far distance communication, with the help of modern semiconductors are considered.
+
+Lightwave communication originates from smoke signals and semaphores with flag or light (latter a.k.a. signal lamp) and developed into a ``Photophone'' by Bell in 1880 \cite{bell}.
+Due to its extremely high line of sight and most importantly, the lack of technology to enable efficient and low power switching of lightwave signals to match that of radio wave, it did not attract much attention till recent years.
+However, thanks to advances in modern semiconductors, and mass production of light-emitting diodes (LED) and photodiodes (PD), the field of lightwave communication has re-opened.
+Currently playing the most crucial role in fibre-optic communication, lightwave is reaching for the wireless.
+
+Modern wireless communication heavily relies on the modulation of LEDs \cite{nakagawa2004}.
+Though the initial data rates were low, it has dramatically improved;
+research by Bian et al. in 2017, using generalised space shift keying visible light communication achieved a data rate of \SI{800}{Mbps} with a bit error ratio of 0.02 \cite{Bian2017}.
+Nevertheless, due to its high-speed modulation, lightwave communication relies on expensive and specialised modules, being the major roadblock for lightwave communication.
+
+One cheapest and common lightwave communication module exists; the infrared module, widely used in remote controllers for consumer electronics, and previously used as an inter-device communication for feature phones.
+Although, since infrared communication runs at a low modulation frequency of \SI{38}{kHz}, obtaining a compromisable data rate is a challenge, and since then, it has not drawn much attention.
+Nonetheless, we argue that by carefully considering the protocol, or data frame structure of transmission, we can achieve a reasonable data rate, with multiuser characteristics.
+Multiuser characteristics are essential when considering an open environment, where the number of communicating devices changes dynamically.
+
+In this paper, we propose a tightly packed frame protocol, enabling multiuser access in an open environment.
+Our system is implemented as a system on a chip (SoC), enabling us an appropriate balance of performance and flexibility.
+
+The remainder of this paper is as follows;
+Section \ref{sec:prp} presents our frame structure for our lightwave network, followed with implementation in Section \ref{sec:impl}.
+Finally, we conclude this paper with Section \ref{sec:cncl}.
+
+\section{Proposed protocol}
+A frame consists of a header section, data section and request section.
+It does not have any data checksum or any other footer after the request section since we let the upper layers handle these problems.
+
+\subsection{Header}
+The header consists of a single 8-bit field, containing the number of connected terminals in the network.
+
+\subsection{Data}
+The data consists of multiple 32-bit fields.
+
+\subsection{Request}
+The request consists of two 16-bit fields, each for uplink and downlink request.
+This request field does every operation related to the network.
+The operations are shown in \ref{tab:request}.
+
+\begin{table}
+  \centering
+  \caption{\label{tab:request}
+    Table of request types.
+  }
+  \begin{tabular}{cl}
+    \hline
+    R & Register, sends request to join network.\\
+    U & Unregister, sends request to leave network.\\
+    D & Connect, sends request to connect to another in network.\\
+    H & Disconnect, sends request to disconnect from another.
+  \end{tabular}
+\end{table}
+
+Since the data section's length depends on the number of connected terminals, and request section is fixed length,  the frame length can be calculated by,
+
+
 \end{document}

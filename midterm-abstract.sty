@@ -6,19 +6,26 @@
 %	卒論要旨スタイルファイル
 %	2018/1/24 Hiromu Sekiguchi
 %
-
 \usepackage[headheight=10truept, top=20truemm,bottom=20truemm,left=20truemm,right=20truemm]{geometry}
 \columnsep 10truemm
 \columnseprule 0mm
-\usepackage{indentfirst}
-\usepackage{setspace}
-\setstretch{0.9}
+
+% 英文の場合は以下をコメントアウト
+%% \usepackage{indentfirst}
+%% \usepackage{setspace}
+% \setstretch{0.9}
 
 % ページ数を非表示にする場合は以下をコメントアウト
 \renewcommand{\thepage}{}
 
+% 言語の設定p
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\setotherlanguage{japanese}
+
 % フォントの設定
-\usepackage[noto-otf, deluxe]{luatexja-preset}
+% \usepackage{luatexja}
+\usepackage[noto, deluxe]{luatexja-preset}
 \usepackage{newtxmath, newtxtext}
 
 % タイトルの設定
