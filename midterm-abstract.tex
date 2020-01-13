@@ -6,6 +6,7 @@
 \usepackage{./midterm-abstract}
 % Lualatexの処理系の問題で、siunitxを使う場合は\usepackage{./midterm-abstract}の後にusepackageする
 \usepackage[detect-all]{siunitx}
+\usepackage{tabularx}
 \usepackage{mwe}
 \usepackage{cleveref}
 \renewcommand{\ref}{\Cref}
@@ -54,82 +55,99 @@ Section \ref{sec:prp} presents our frame structure for our lightwave network, fo
 Finally, we conclude this paper with Section \ref{sec:cncl}.
 
 \section{Proposed protocol}
-The protocol requires several terminals, which communicate with each other in the network, and a central controller, to manage the network, as illustrated in \ref{fig:overview}.
+The protocol requires several terminals, which communicate simultaneously with each other in the network, and a central controller, to manage the network, as illustrated in \ref{fig:overview}.
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{example-image}
+  \includegraphics[width=\linewidth]{overview-crop.pdf}
   \caption{\label{fig:overview}
     Illustration of proposed protocol's system.
   }
 \end{figure}
 
-The two goals in the proposed protocol are:
-\begin{itemize}
-\item Achieve multiuser telecommunication.
-\item Maximize bit efficiency.
-\end{itemize}
+Since we are dealing with open environments, each terminal joins/leaves the network, and connects/disconnects to another by sending requests to the controller.
+The controller then processes requests and responds whether the request was accepped or not, along with additional information.
+The protocol predefine the requests as request protocols, as shown in \ref{tab:request}.
 
-A frame structure, consisting from datum, from multiple terminals and controller dispatching datum at the exact certain time, is shown in \ref{fig:frame}.
+\begin{table}[tb]
+  \centering
+  \caption{\label{tab:request}
+    Table of request protocols.
+  }
+  \begin{tabularx}{\linewidth}{ccl}
+    \hline
+    Identifier & Name & Description\\
+    \hline \hline
+    R & Register & Join network\\
+    U & Unregister & Leave network\\
+    D & Connect & Connect to another terminal\\
+    H & Disconnect & Break current connection\\
+    \hline
+  \end{tabularx}
+\end{table}
+
+To achieve the aforementioned specification, an especial frame structure is used, as shown in \ref{fig:frame}.
+The frame is a TDMA like frame, consiting from datum, from multiple terminals and controller.
+However, there are crucial differences.
+\begin{itemize}
+\item A footer-like request section is introduced.
+  This section is used to send/receive requests, defined in the request protocol.
+\item Every block has no guard intervals, thus every block can fully be used as datum.
+  \item The destination of each block is pre-defined by the network, thus no extra headers/footers are needed in each blocks.
+\end{itemize}
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{example-image}
+  \includegraphics[width=\linewidth]{frame-crop.pdf}
   \caption{\label{fig:frame}
     Illustration of frame used in protocol.
   }
 \end{figure}
+%% The two goals in the proposed protocol are:
+%% \begin{itemize}
+%% \item Achieve multiuser telecommunication.
+%% \item Maximize bit efficiency.
+%% \end{itemize}
 
-The goals of the controller are
-\begin{itemize}
-\item managing the network by handling requests from each terminal
-\item switching datum from each uplink block to the appropriate downlink block
-\end{itemize}
+%% The goals of the controller are
+%% \begin{itemize}
+%% \item managing the network by handling requests from each terminal
+%% \item switching datum from each uplink block to the appropriate downlink block
+%% \end{itemize}
 
-The goals for the terminal is to 
+%% The goals for the terminal is to 
 
-\begin{itemize}
-\item Remove the guard time in TDMA.
-\item Remove the headers for each time slot in TDMA.
-\end{itemize}
+%% \begin{itemize}
+%% \item Remove the guard time in TDMA.
+%% \item Remove the headers for each time slot in TDMA.
+%% \end{itemize}
 
-A frame consists of a header section, data section and request section.
-It does not have any data checksum or any other footer after the request section since we let the upper layers handle these problems.
-
+%% \subsection{Frame}
+%% A frame consists of a header section, data section and request section.
+%% It does not have any data checksum or any other footer after the request section since we let the upper layers handle these problems.
 \subsection{Header}
-The header consists of a single 8-bit field, containing the number of connected terminals $n_{c}$ in the network.
-Since the data section length $l_d$ is fixed and the number of data depends on the number of connected terminals, and request section is fixed length $l_r$ , the frame length $L$ can be calculated by,
+The header consists of a single octet field, containing the number of connected terminals $n_{c}$ in the network.
+Since each data block length $l_d$ is fixed and the number of data depends on the number of connected terminals, and request section is fixed length $l_r$ , the frame length $L$ can be calculated by,
 \begin{equation}
   \label{}
-  L = n_c \cdot l_d \cdot 2 + l_r \cdot 2
+  L = n_c \cdot l_d \cdot 2 + l_r \cdot 2,
 \end{equation}
+which is used to detemine the end of the frame.
 
 \subsection{Data}
-The data consists of multiple 32-bit fields.
-For each conncted terminal in the network, two data fields are given; one for terminal to controller (herinafter uplink) and the other for controller to terminal (herinafter downlink).
-A 32-bit field is chosen, since it is able to send one single precision floating point number, which the goal of this protocol is for motion controlling in open environments.
+The data consists of multiple 4 octet blcoks.
+For each conncted terminal in the network, two data fields are given; one for terminal to controller (uplink) and the other for controller to terminal (downlink).
+A 4 octet block is chosen, since it is able to send one single precision floating point number, which the goal of this protocol is for motion controlling in open environments.
 
 \subsection{Request}
-The request consists of two 16-bit fields, each for uplink and downlink request.
+The request consists of two double octet fields, each for uplink and downlink request.
 This request field does every operation related to the network.
 The operations are shown in \ref{tab:request}.
 
-\begin{table}
-  \centering
-  \caption{\label{tab:request}
-    Table of request types.
-  }
-  \begin{tabular}{cl}
-    \hline
-    R & Register, sends request to join network.\\
-    U & Unregister, sends request to leave network.\\
-    D & Connect, sends request to connect to another in network.\\
-    H & Disconnect, sends request to disconnect from another. \\
-    \hline
-  \end{tabular}
-\end{table}
+Downlink requests are preformed by only the controller, however, uplink requests are done by many terminals.
+This can lead to collisions, and unsuccessful uplink requests.
 
-
+To solve this problem, each terminal will preform a re-request after waiting a random amount of time, like ALOHA.
 \section{Implementation}
 To satisfy the above mentioned protocol, a System on a Chip (SoC) implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
 
@@ -142,6 +160,14 @@ Due to reducing complexity, the received data is sent to the Processing System (
 
 
 \section{Evaluation}
+Two elaluation was done to validate the protocol.
+\begin{itemize}
+\item \textbf{Evaluation 1}, validated the open enviroment performance of the protocol.
+  Using two terminals and controller, we verified that two terminals registered to the network, provided by the controller.
+  Upon unregisteration, we also verified that the unused frames were released.
+\item \textbf{Evaluation 2}, validated the multiuser perfomance of the protocol.
+  Using two terminals registered to the network, we verified that two terminal could stimulaniously send/receive datum.
+\end{itemize}
 
 \section{Conclusion}
 This thesis presented a new protocol, based on TDMA and EtherCAT, aimed to enable a multiuser telecommunication in an open environment with low symbol rate systems.
