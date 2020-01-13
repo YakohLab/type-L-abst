@@ -66,8 +66,8 @@ The protocol requires several terminals, which communicate simultaneously with e
 \end{figure}
 
 Since we are dealing with open environments, each terminal joins/leaves the network, and connects/disconnects to another by sending requests to the controller.
-The controller then processes requests and responds whether the request was accepped or not, along with additional information.
-The protocol predefine the requests as request protocols, as shown in \ref{tab:request}.
+The controller then processes requests and responds whether the request was accepted or not, along with additional information.
+The protocol pre-define the requests as request protocols, as shown in \ref{tab:request}.
 
 \begin{table}[tb]
   \centering
@@ -86,48 +86,27 @@ The protocol predefine the requests as request protocols, as shown in \ref{tab:r
   \end{tabularx}
 \end{table}
 
-To achieve the aforementioned specification, an especial frame structure is used, as shown in \ref{fig:frame}.
-The frame is a TDMA like frame, consiting from datum, from multiple terminals and controller.
+To achieve the specification, as mentioned earlier, we use an especial frame structure, as shown in \ref{fig:frame}.
+The frame is TDMA like consisting of data, from multiple terminals and controller.
 However, there are crucial differences.
 \begin{itemize}
 \item A footer-like request section is introduced.
-  This section is used to send/receive requests, defined in the request protocol.
-\item Every block has no guard intervals, thus every block can fully be used as datum.
-  \item The destination of each block is pre-defined by the network, thus no extra headers/footers are needed in each blocks.
+  Terminals/Controller use this section to send/receive requests, defined in the request protocol.
+\item Every block has no guard intervals; thus, data every block is entirely used as data.
+\item The destination of each block is pre-defined by the network; thus, no extra headers/footers are needed in each block.
 \end{itemize}
 
 \begin{figure}[tb]
   \centering
   \includegraphics[width=\linewidth]{frame-crop.pdf}
   \caption{\label{fig:frame}
-    Illustration of frame used in protocol.
+    Illustration of frame used in the protocol.
   }
 \end{figure}
-%% The two goals in the proposed protocol are:
-%% \begin{itemize}
-%% \item Achieve multiuser telecommunication.
-%% \item Maximize bit efficiency.
-%% \end{itemize}
 
-%% The goals of the controller are
-%% \begin{itemize}
-%% \item managing the network by handling requests from each terminal
-%% \item switching datum from each uplink block to the appropriate downlink block
-%% \end{itemize}
-
-%% The goals for the terminal is to 
-
-%% \begin{itemize}
-%% \item Remove the guard time in TDMA.
-%% \item Remove the headers for each time slot in TDMA.
-%% \end{itemize}
-
-%% \subsection{Frame}
-%% A frame consists of a header section, data section and request section.
-%% It does not have any data checksum or any other footer after the request section since we let the upper layers handle these problems.
 \subsection{Header}
 The header consists of a single octet field, containing the number of connected terminals $n_{c}$ in the network.
-Since each data block length $l_d$ is fixed and the number of data depends on the number of connected terminals, and request section is fixed length $l_r$ , the frame length $L$ can be calculated by,
+Since each data block length, $l_d$ is fixed, and the number of data depends on the number of connected terminals, and request section is fixed length $l_r$, the frame length $L$ can be calculated by,
 \begin{equation}
   \label{}
   L = n_c \cdot l_d \cdot 2 + l_r \cdot 2,
@@ -135,44 +114,41 @@ Since each data block length $l_d$ is fixed and the number of data depends on th
 which is used to detemine the end of the frame.
 
 \subsection{Data}
-The data consists of multiple 4 octet blcoks.
-For each conncted terminal in the network, two data fields are given; one for terminal to controller (uplink) and the other for controller to terminal (downlink).
-A 4 octet block is chosen, since it is able to send one single precision floating point number, which the goal of this protocol is for motion controlling in open environments.
+The data consists of multiple four-octet blocks.
+For each connected terminal in the network, the controller grants two data fields; one for the terminal to the controller (uplink) and the other for the controller to the terminal (downlink).
+A four octet block is chosen since it can send one single-precision floating-point number, which the goal of this protocol is for motion controlling in open environments.
 
 \subsection{Request}
 The request consists of two double octet fields, each for uplink and downlink request.
 This request field does every operation related to the network.
 The operations are shown in \ref{tab:request}.
 
-Downlink requests are preformed by only the controller, however, uplink requests are done by many terminals.
-This can lead to collisions, and unsuccessful uplink requests.
+Only the controller performs downlink requests; however, many terminals make uplink requests, leading to collisions and unsuccessful uplink requests.
 
-To solve this problem, each terminal will preform a re-request after waiting a random amount of time, like ALOHA.
+Each terminal solves this problem by performing a re-request after waiting a random amount of time (like ALOHA).
 \section{Implementation}
-To satisfy the above mentioned protocol, a System on a Chip (SoC) implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
+To satisfy the above-mentioned protocol, a System on a Chip (SoC) implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
 
 The controller and terminal is shown in \ref{fig:controller} and \ref{fig:terminal} respectivly.
-Both controller and terminal operates datum by opening the data gate at the exact time.
+Both the controller and terminal operates data by opening the data gate at the exact time.
+Both operate with its oscillator; however, for terminals phase synchronisation is necessary.
 
-Both operates with its own osilator, however a phase synchronisation is done with the terminal.
-
-Due to reducing complexity, the received data is sent to the Processing System (ARM\textregistered -based processor), where for the controller and terminal are processed as \ref{fig:controller-proc} and \ref{fig:termial-proc} respectivly.
-
+The Processing System (ARM\textregistered -based processor) takes care of the received data, where for the controller and terminal are processed as \ref{fig:controller-proc} and \ref{fig:terminal-proc}, respectively.
 
 \section{Evaluation}
 Two elaluation was done to validate the protocol.
 \begin{itemize}
 \item \textbf{Evaluation 1}, validated the open enviroment performance of the protocol.
   Using two terminals and controller, we verified that two terminals registered to the network, provided by the controller.
-  Upon unregisteration, we also verified that the unused frames were released.
-\item \textbf{Evaluation 2}, validated the multiuser perfomance of the protocol.
-  Using two terminals registered to the network, we verified that two terminal could stimulaniously send/receive datum.
+  Upon un-registration, we also verified that the unused frames were released.
+\item \textbf{Evaluation 2}, validated the multiuser performance of the protocol.
+  Using two terminals registered to the network, we verified that two terminals could simultaneously send/receive datum.
 \end{itemize}
 
 \section{Conclusion}
-This thesis presented a new protocol, based on TDMA and EtherCAT, aimed to enable a multiuser telecommunication in an open environment with low symbol rate systems.
-A centreal controller was introduced to enable multiuser specifications.
-To maximize the bit efficiency, the guard time and headers for each terminal was removed.
-To realize these specifications, we implemented the sysytem to an SoC.
-Evaluation was done to determine the required specification were met.
+This thesis presented a new protocol, based on TDMA and EtherCAT, aimed to enable multiuser telecommunication in an open environment with low symbol rate systems.
+We introduced a central controller to enable multiuser specifications.
+To maximise the bit efficiency, we removed the guard time and headers for each terminal.
+To realise these specifications, we implemented the system to an SoC.
+We validated the implementation and verified that the specifications meet the protocol specifications.
 \end{document}
