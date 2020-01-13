@@ -6,7 +6,9 @@
 \usepackage{./midterm-abstract}
 % Lualatexの処理系の問題で、siunitxを使う場合は\usepackage{./midterm-abstract}の後にusepackageする
 \usepackage[detect-all]{siunitx}
+\usepackage{mwe}
 \usepackage{cleveref}
+\renewcommand{\ref}{\Cref}
 
 \def\thesisnumber{2018-XX-YY}
 \title{和文題目}
@@ -52,14 +54,60 @@ Section \ref{sec:prp} presents our frame structure for our lightwave network, fo
 Finally, we conclude this paper with Section \ref{sec:cncl}.
 
 \section{Proposed protocol}
+The protocol requires several terminals, which communicate with each other in the network, and a central controller, to manage the network, as illustrated in \ref{fig:overview}.
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{example-image}
+  \caption{\label{fig:overview}
+    Illustration of proposed protocol's system.
+  }
+\end{figure}
+
+The two goals in the proposed protocol are:
+\begin{itemize}
+\item Achieve multiuser telecommunication.
+\item Maximize bit efficiency.
+\end{itemize}
+
+A frame structure, consisting from datum, from multiple terminals and controller dispatching datum at the exact certain time, is shown in \ref{fig:frame}.
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{example-image}
+  \caption{\label{fig:frame}
+    Illustration of frame used in protocol.
+  }
+\end{figure}
+
+The goals of the controller are
+\begin{itemize}
+\item managing the network by handling requests from each terminal
+\item switching datum from each uplink block to the appropriate downlink block
+\end{itemize}
+
+The goals for the terminal is to 
+
+\begin{itemize}
+\item Remove the guard time in TDMA.
+\item Remove the headers for each time slot in TDMA.
+\end{itemize}
+
 A frame consists of a header section, data section and request section.
 It does not have any data checksum or any other footer after the request section since we let the upper layers handle these problems.
 
 \subsection{Header}
-The header consists of a single 8-bit field, containing the number of connected terminals in the network.
+The header consists of a single 8-bit field, containing the number of connected terminals $n_{c}$ in the network.
+Since the data section length $l_d$ is fixed and the number of data depends on the number of connected terminals, and request section is fixed length $l_r$ , the frame length $L$ can be calculated by,
+\begin{equation}
+  \label{}
+  L = n_c \cdot l_d \cdot 2 + l_r \cdot 2
+\end{equation}
 
 \subsection{Data}
 The data consists of multiple 32-bit fields.
+For each conncted terminal in the network, two data fields are given; one for terminal to controller (herinafter uplink) and the other for controller to terminal (herinafter downlink).
+A 32-bit field is chosen, since it is able to send one single precision floating point number, which the goal of this protocol is for motion controlling in open environments.
 
 \subsection{Request}
 The request consists of two 16-bit fields, each for uplink and downlink request.
@@ -76,11 +124,29 @@ The operations are shown in \ref{tab:request}.
     R & Register, sends request to join network.\\
     U & Unregister, sends request to leave network.\\
     D & Connect, sends request to connect to another in network.\\
-    H & Disconnect, sends request to disconnect from another.
+    H & Disconnect, sends request to disconnect from another. \\
+    \hline
   \end{tabular}
 \end{table}
 
-Since the data section's length depends on the number of connected terminals, and request section is fixed length,  the frame length can be calculated by,
+
+\section{Implementation}
+To satisfy the above mentioned protocol, a System on a Chip (SoC) implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
+
+The controller and terminal is shown in \ref{fig:controller} and \ref{fig:terminal} respectivly.
+Both controller and terminal operates datum by opening the data gate at the exact time.
+
+Both operates with its own osilator, however a phase synchronisation is done with the terminal.
+
+Due to reducing complexity, the received data is sent to the Processing System (ARM\textregistered -based processor), where for the controller and terminal are processed as \ref{fig:controller-proc} and \ref{fig:termial-proc} respectivly.
 
 
+\section{Evaluation}
+
+\section{Conclusion}
+This thesis presented a new protocol, based on TDMA and EtherCAT, aimed to enable a multiuser telecommunication in an open environment with low symbol rate systems.
+A centreal controller was introduced to enable multiuser specifications.
+To maximize the bit efficiency, the guard time and headers for each terminal was removed.
+To realize these specifications, we implemented the sysytem to an SoC.
+Evaluation was done to determine the required specification were met.
 \end{document}
