@@ -19,43 +19,25 @@
 \begin{document}
 \maketitle
 \section{Introduction}
-Due to the dramatic increase in the number of connected and mobile communication devices, collecting and sending even more data than ever before has supported the growth of new technological areas, such as big data analysis and machine intelligence (a.k.a artificial intelligence).
-Behind this spectacular growth, we are facing a significant challenge; data traffic expected to grow continuously, from \SI{122}{EB} per month in 2017 to a predicted \SI{396}{EB} in 2022 \cite{cisco}.
-Also, traffic from wireless and mobile devices predicted to increase, from 52\% in 2017 to a predicted 71\% in 2022; satisfying greater spectral efficiency to enable even higher data rates and energy efficiency and low latency with the current wireless bands are critical, however impossible.
+Due to the dramatic increase in the number of connected and mobile communication devices, collecting and sending even more data than ever before has supported the growth of new technological areas.
+Behind this spectacular growth, we are facing a significant challenge; data traffic expected to grow continuously.
+Also, traffic from wireless and mobile devices predicted to increase, from 52\% in 2017 to a predicted 71\% in 2022; satisfying greater spectral efficiency to enable even higher data rates and energy efficiency and low latency with the current ultra-high frequency (UHF) wireless bands are critical, however impossible.
 
-The International Telecommunication Union (ITU) defines a broad range of radio bands in its radio regulations,
-from extremely-low frequency (ELF) band starting from 3--\SI{30}{Hz} to tremendously-high-frequency band at 300--\SI{3000}{GHz}.
-Still, almost all current communication relies on the ultra-high frequency (UHF) at 300--\SI{3000}{MHz}, due to its convenient characteristics; penetrating foliage and buildings for indoor reception.
-However, this UHF band is overloaded, many tweaks already introduced to use its bandwidth to the limit. 
-Hence, they will not be able to handle the increase in traffic, as mentioned above.
-
-Recently there has been a focused adoption of fifth-generation (5G) network, using millimetre waves or super-high to extremely-high frequencies; many countries are rushing for 5G as if it is the silver bullet to solve this problem.
-However, since the vital challenges to adopting the millimetre waves, and due to many regulations with 5G, already a post-millimetre-wave communication utilising our oldest method for far distance communication, with the help of modern semiconductors are considered.
-
-Lightwave communication originates from smoke signals and semaphores with flag or light (latter a.k.a. signal lamp) and developed into a ``Photophone'' by Bell in 1880 \cite{bell}.
-Due to its extremely high line of sight and most importantly, the lack of technology to enable efficient and low power switching of lightwave signals to match that of radio wave, it did not attract much attention till recent years.
+Lightwave communication, due to its extremely high line of sight and the lack of technology to enable efficient and low power switching of lightwave signals to match that of radio wave, it did not attract much attention till recent years.
 However, thanks to advances in modern semiconductors, and mass production of light-emitting diodes (LED) and photodiodes (PD), the field of lightwave communication has re-opened.
-Currently playing the most crucial role in fibre-optic communication, lightwave is reaching for the wireless.
-
-Modern wireless communication heavily relies on the modulation of LEDs \cite{nakagawa2004}.
-Though the initial data rates were low, it has dramatically improved;
-research by Bian et al. in 2017, using generalised space shift keying visible light communication achieved a data rate of \SI{800}{Mbps} with a bit error ratio of 0.02 \cite{Bian2017}.
-Nevertheless, due to its high-speed modulation, lightwave communication relies on expensive and specialised modules, being the major roadblock for lightwave communication.
+Modern wireless communication heavily relies on the modulation of LEDs, nevertheless, due to its high-speed modulation, lightwave communication relies on expensive and specialised modules, being the major roadblock for lightwave communication.
 
 One cheapest and common lightwave communication module exists; the infrared module, widely used in remote controllers for consumer electronics, and previously used as an inter-device communication for feature phones.
 Although, since infrared communication runs at a low modulation frequency of \SI{38}{kHz}, obtaining a compromisable data rate is a challenge, and since then, it has not drawn much attention.
-Nonetheless, we argue that by carefully considering the protocol, or data frame structure of transmission, we can achieve a reasonable data rate, with multiuser characteristics.
-Multiuser characteristics are essential when considering an open environment, where the number of communicating devices changes dynamically.
+
+Nonetheless, we argue that however it was impossible with any existing protocols, by carefully designing a new protocol, we can achieve a reasonable data rate, with multiuser characteristics.
+Multiuser characteristics are essential when considering an open environment, where many terminals enter and leave the communication channel on the fly.
 
 In this paper, we propose a tightly packed frame protocol, enabling multiuser access in an open environment.
 Our system is implemented as a system on a chip (SoC), enabling us an appropriate balance of performance and flexibility.
 
-The remainder of this paper is as follows;
-Section \ref{sec:prp} presents our frame structure for our lightwave network, followed with implementation in Section \ref{sec:impl}.
-Finally, we conclude this paper with Section \ref{sec:cncl}.
-
 \section{Proposed protocol}
-The protocol requires several terminals, which communicate simultaneously with each other in the network, and a central controller, to manage the network, as illustrated in \ref{fig:overview}.
+The protocol involves several terminals, which communicate simultaneously with each other in the network, and a central controller, to manage the network, as illustrated in \ref{fig:overview}.
 
 \begin{figure}[tb]
   \centering
@@ -125,7 +107,7 @@ The operations are shown in \ref{tab:request}.
 
 Only the controller performs downlink requests; however, many terminals make uplink requests, leading to collisions and unsuccessful uplink requests.
 
-Each terminal solves this problem by performing a re-request after waiting a random amount of time (like ALOHA).
+Each terminal solves this problem by performing a re-request after waiting a random amount of time.
 \section{Implementation}
 To satisfy the above-mentioned protocol, a System on a Chip (SoC) implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
 
