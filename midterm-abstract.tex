@@ -12,29 +12,41 @@
 \usepackage{cleveref}
 \renewcommand{\ref}{\Cref}
 
-\def\thesisnumber{2018-XX-YY}
+\def\thesisnumber{2019-16-02}
 \title{マルチユーザ赤外線通信の設計}
 \def\englishtitle{Designing a Multi-user Infrared Communication}
 \author{81816518 鳥野見武家 (Takeie Torinomi)　Supervisor: 矢向高弘 (Takahiro Yakoh)}
 \begin{document}
 \maketitle
 \section{Introduction}
-Due to the dramatic increase in the number of connected and mobile communication devices, collecting and sending even more data than ever before has supported the growth of new technological areas.
-Behind this spectacular growth, we are facing a significant challenge; data traffic expected to grow continuously.
-Also, traffic from wireless and mobile devices predicted to increase, from 52\% in 2017 to a predicted 71\% in 2022; satisfying greater spectral efficiency to enable even higher data rates and energy efficiency and low latency with the current ultra-high frequency (UHF) wireless bands are critical, however impossible.
-
-Lightwave communication, due to its extremely high line of sight and the lack of technology to enable efficient and low power switching of lightwave signals to match that of radio wave, it did not attract much attention till recent years.
-However, thanks to advances in modern semiconductors, and mass production of light-emitting diodes (LED) and photodiodes (PD), the field of lightwave communication has re-opened.
-Modern wireless communication heavily relies on the modulation of LEDs, nevertheless, due to its high-speed modulation, lightwave communication relies on expensive and specialised modules, being the major roadblock for lightwave communication.
-
-One cheapest and common lightwave communication module exists; the infrared module, widely used in remote controllers for consumer electronics, and previously used as an inter-device communication for feature phones.
-Although, since infrared communication runs at a low modulation frequency of \SI{38}{kHz}, obtaining a compromisable data rate is a challenge, and since then, it has not drawn much attention.
+One common lightwave telecommunication method is infrared, widely used in remote controllers for consumer electronics, and previously used as an intre-device communication.
+Although, since infrared communication runs at a low modulation frequency of \SI{38}{kHz}, obtaining a compromisable data rate is a challenge.Ever since the improvement of radio frequency (RF) telecommunication, it has not drawn much attention.
 
 Nonetheless, we argue that however it was impossible with any existing protocols, by carefully designing a new protocol, we can achieve a reasonable data rate, with multiuser characteristics.
 Multiuser characteristics are essential when considering an open environment, where many terminals enter and leave the communication channel on the fly.
 
 In this paper, we propose a tightly packed frame protocol, enabling multiuser access in an open environment.
 Our system is implemented as a system on a chip (SoC), enabling us an appropriate balance of performance and flexibility.
+
+\section{Conventional protocols}
+%% TODO(me):Write something here
+
+\subsection{Time division multiple access}
+Time division multiple access (TDMA) is a protocol, which assignes ``time-slot'' exclusive to each terminal, along with a ``guard-time'' between each time slot to avoid overlapping of transmission, when two or more users have different propagation delays.
+During the assigned time-slot, each terminal is allowed to do any kinds of operations.
+
+However, since TDMA divides time, a synchronization between terminals is required.
+Also, each terminal in TDMA must be pre-configured which time-slot to use, making it useless in open environments.
+
+\subsection{Ethernet for Control Automation Technology}
+Ethernet for Control Automation Technology (EtherCAT) is a protocol, where a network controller controls the whole network.
+Data is interchanged by circulating frames transmitted by the controller in the network.
+Only when a frame arrives, each terminal is allowed to read/write data.
+After the node finished reading/writing, the frame is transmitted to the next node.
+By preforming this read/write/transmit procedure are on-the-fly, high-speed and real-time communication is possible.
+
+However, since each terminal in EtherCAT must be pre-configured, it is also useless in open environments.
+Also, EtherCAT is a protocol for wired telecommunication, already requiring 
 
 \section{Proposed protocol}
 The protocol involves several terminals, which communicate simultaneously with each other in the network, and a central controller, to manage the network, as illustrated in \ref{fig:overview}.
@@ -48,6 +60,7 @@ The protocol involves several terminals, which communicate simultaneously with e
 \end{figure}
 
 Since we are dealing with open environments, each terminal joins/leaves the network, and connects/disconnects to another by sending requests to the controller.
+A footer-like request section is used, where controller/terminals use to send/receive requests, defined in the request protocol.
 The controller then processes requests and responds whether the request was accepted or not, along with additional information.
 The protocol pre-define the requests as request protocols, as shown in \ref{tab:request}.
 
@@ -68,14 +81,15 @@ The protocol pre-define the requests as request protocols, as shown in \ref{tab:
   \end{tabularx}
 \end{table}
 
-To achieve the specification, as mentioned earlier, we use an especial frame structure, as shown in \ref{fig:frame}.
-The frame is TDMA like consisting of data, from multiple terminals and controller.
-However, there are crucial differences.
+To achieve the specification, we use an especial frame structure, as shown in \ref{fig:frame}.
+This frame is built from the controller and several terminals in the network on the fly, like EtherCAT.
+By taking this method, we can relish the key features of EtherCAT; decreased delay, since each terminals do not have to process the entire frame to send its data.
+Furthermore, unlike EtherCAT, where all terminals have to be connected in a daisy chain, our protocol is aimed for wireless fields, where connection is as easy as putting each terminal in range of controller.
+
+Other than that, we have more advantages:
 \begin{itemize}
-\item A footer-like request section is introduced.
-  Terminals/Controller use this section to send/receive requests, defined in the request protocol.
 \item Every block has no guard intervals; thus, data every block is entirely used as data.
-\item The destination of each block is pre-defined by the network; thus, no extra headers/footers are needed in each block.
+\item The destination of each block is pre-defined by the network; thus, no extra headers/footers are needed for each block.
 \end{itemize}
 
 \begin{figure}[tb]
