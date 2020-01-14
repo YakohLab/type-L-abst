@@ -1,4 +1,9 @@
-﻿\documentclass[twocolumn,9pt]{ltjsarticle}
+﻿\documentclass[twocolumn,9pt]{scrartcl}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\setotherlanguage{japanese}
+
 \usepackage{graphicx}
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
@@ -14,8 +19,7 @@
 \def\thesisnumber{2018-XX-YY}
 \title{和文題目}
 \def\englishtitle{English Title}
-\author{8ZZZZZZZ 慶應太郎 (Taro Keio)　Supervisor: 矢上諭吉 (Yukichi Yagami)}
-
+\author{81816518 鳥野見武家 (Takeie Torinomi)　Supervisor: 矢向高弘 (Takahiro Yakoh)}
 \begin{document}
 \maketitle
 \section{Introduction}
@@ -132,6 +136,22 @@ To satisfy the above-mentioned protocol, a System on a Chip (SoC) implementation
 The controller and terminal is shown in \ref{fig:controller} and \ref{fig:terminal} respectivly.
 Both the controller and terminal operates data by opening the data gate at the exact time.
 Both operate with its oscillator; however, for terminals phase synchronisation is necessary.
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{NL-crop.pdf}
+  \caption{\label{fig:controller}
+    Illustration of controller.
+  }
+\end{figure}
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{UE-crop.pdf}
+  \caption{\label{fig:terminal}
+    Illustration of controller.
+  }
+\end{figure}
 
 The Processing System (ARM\textregistered -based processor) takes care of the received data, where for the controller and terminal are processed as \ref{fig:controller-proc} and \ref{fig:terminal-proc}, respectively.
 
