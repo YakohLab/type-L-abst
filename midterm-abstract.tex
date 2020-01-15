@@ -11,6 +11,8 @@
 \usepackage{mwe}
 \usepackage{cleveref}
 \renewcommand{\ref}{\Cref}
+\addto\captionsenglish{\renewcommand{\figurename}{Figure~}}
+\addto\captionsenglish{\renewcommand{\tablename}{TABLE~}}
 
 \def\thesisnumber{2019-16-02}
 \title{マルチユーザ赤外線通信の設計}
@@ -29,7 +31,8 @@ In this paper, we propose a tightly packed frame protocol, enabling multiuser ac
 Our system is implemented as a system on a chip (SoC), enabling us an appropriate balance of performance and flexibility.
 
 \section{Conventional protocols}
-%% TODO(me):Write something here
+Many protocols have been proposed, each with their own advantages.
+Here, we present protocols we refered, upon designing our protocol.
 
 \subsection{Time division multiple access}
 Time division multiple access (TDMA) is a protocol, which assignes ``time-slot'' exclusive to each terminal, along with a ``guard-time'' between each time slot to avoid overlapping of transmission, when two or more users have different propagation delays.
@@ -46,10 +49,11 @@ After the node finished reading/writing, the frame is transmitted to the next no
 By preforming this read/write/transmit procedure are on-the-fly, high-speed and real-time communication is possible.
 
 However, since each terminal in EtherCAT must be pre-configured, it is also useless in open environments.
-Also, EtherCAT is a protocol for wired telecommunication, already requiring 
+Also, EtherCAT is a protocol for wired telecommunication, requiring daisy-chain connection.
 
 \section{Proposed protocol}
-The protocol involves several terminals, which communicate simultaneously with each other in the network, and a central controller, to manage the network, as illustrated in \ref{fig:overview}.
+Our protocol is a connection oriented full-duplex protocol, using the lightwave channel.
+It involves several terminals, which communicate simultaneously with each other using the establised session, and a central controller, to manage the network and sessions, as illustrated in \ref{fig:overview}.
 
 \begin{figure}[tb]
   \centering
@@ -59,11 +63,27 @@ The protocol involves several terminals, which communicate simultaneously with e
   }
 \end{figure}
 
-Since we are dealing with open environments, each terminal joins/leaves the network, and connects/disconnects to another by sending requests to the controller.
-A footer-like request section is used, where controller/terminals use to send/receive requests, defined in the request protocol.
-The controller then processes requests and responds whether the request was accepted or not, along with additional information.
-The protocol pre-define the requests as request protocols, as shown in \ref{tab:request}.
-
+Each terminal in the network is given two blocks, a unit of communication used in our protocol.
+One is used to exchange data between the terminal to the controller (uplink) and the other for the controller to the terminal (downlink).
+Each terminal receives data from the given downlink block, and writes to its uplink block on the fly, building a single frame structure, as shown in \ref{fig:frame}, as a whole network.
+This behaviour is based on EtherCAT's frame structure, to relish the decreased delay EtherCAT offers, since each terminal do not have to process the entire frame to send its data.
+However, unlike EtherCAT, where all terminals have to be wired in a daisy chain, our protocol is wireless; connection is as easy as putting each terminal in range of controller.
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\linewidth]{frame-crop.pdf}
+  \caption{\label{fig:frame}
+    Illustration of frame used in the protocol.
+  }
+\end{figure}
+%% This is introduced to remove headers for each block, and increase the payload.
+%% contation window
+Since we are dealing with open environments, each terminal must be able to join/leave the network, and establish/demolish its sessions.
+This is done by sending requests to the controller (uplink request), using a contation-window-like request section, introduced for this specific purpose.
+All requests are defined in the request protocol, along with an identifier to reduce transmission, as shown in \ref{tab:request}.
+The controller processes these requests and responds (downlink request) along with additional information.
+The request section is also split up, for the downlink request not to collide with uplink request, since downlink requets transmit information to maintain a stable, predictable network.
+On the other side, uplink requests are vurnable to collisions; if many terminals make uplink requests at the same time, requests will collide and lead to unsuccessful uplink requests.
+This problem is solved by each terminal retrying the same request after waiting a random amount of time.
 \begin{table}[tb]
   \centering
   \caption{\label{tab:request}
@@ -81,47 +101,6 @@ The protocol pre-define the requests as request protocols, as shown in \ref{tab:
   \end{tabularx}
 \end{table}
 
-To achieve the specification, we use an especial frame structure, as shown in \ref{fig:frame}.
-This frame is built from the controller and several terminals in the network on the fly, like EtherCAT.
-By taking this method, we can relish the key features of EtherCAT; decreased delay, since each terminals do not have to process the entire frame to send its data.
-Furthermore, unlike EtherCAT, where all terminals have to be connected in a daisy chain, our protocol is aimed for wireless fields, where connection is as easy as putting each terminal in range of controller.
-
-Other than that, we have more advantages:
-\begin{itemize}
-\item Every block has no guard intervals; thus, data every block is entirely used as data.
-\item The destination of each block is pre-defined by the network; thus, no extra headers/footers are needed for each block.
-\end{itemize}
-
-\begin{figure}[tb]
-  \centering
-  \includegraphics[width=\linewidth]{frame-crop.pdf}
-  \caption{\label{fig:frame}
-    Illustration of frame used in the protocol.
-  }
-\end{figure}
-
-\subsection{Header}
-The header consists of a single octet field, containing the number of connected terminals $n_{c}$ in the network.
-Since each data block length, $l_d$ is fixed, and the number of data depends on the number of connected terminals, and request section is fixed length $l_r$, the frame length $L$ can be calculated by,
-\begin{equation}
-  \label{}
-  L = n_c \cdot l_d \cdot 2 + l_r \cdot 2,
-\end{equation}
-which is used to detemine the end of the frame.
-
-\subsection{Data}
-The data consists of multiple four-octet blocks.
-For each connected terminal in the network, the controller grants two data fields; one for the terminal to the controller (uplink) and the other for the controller to the terminal (downlink).
-A four octet block is chosen since it can send one single-precision floating-point number, which the goal of this protocol is for motion controlling in open environments.
-
-\subsection{Request}
-The request consists of two double octet fields, each for uplink and downlink request.
-This request field does every operation related to the network.
-The operations are shown in \ref{tab:request}.
-
-Only the controller performs downlink requests; however, many terminals make uplink requests, leading to collisions and unsuccessful uplink requests.
-
-Each terminal solves this problem by performing a re-request after waiting a random amount of time.
 \section{Implementation}
 To satisfy the above-mentioned protocol, a System on a Chip (SoC) implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
 
@@ -152,10 +131,27 @@ The Processing System (ARM\textregistered -based processor) takes care of the re
 Two elaluation was done to validate the protocol.
 \begin{itemize}
 \item \textbf{Evaluation 1}, validated the open enviroment performance of the protocol.
-  Using two terminals and controller, we verified that two terminals registered to the network, provided by the controller.
+  Using a terminal (Terminal A) and controller, we verified that the terminal registered to the network.
   Upon un-registration, we also verified that the unused frames were released.
+  \ref{fig:register} shows the registering process.
+  \begin{figure}[tb]
+    \centering
+    \includegraphics[width=.75\linewidth]{register-crop.pdf}
+    \caption{\label{fig:register}
+      Diagram of register process.
+      Upon a successful registeration, the controller successfully increases the number of devices in the network.
+    }
+  \end{figure}
 \item \textbf{Evaluation 2}, validated the multiuser performance of the protocol.
-  Using two terminals registered to the network, we verified that two terminals could simultaneously send/receive datum.
+  Using two terminals with an esablished session, we verified that two terminals could simultaneously send/receive datum.
+    \begin{figure}[tb]
+    \centering
+    \includegraphics[width=\linewidth]{message-crop.pdf}
+    \caption{\label{fig:register}
+      Diagram of register process.
+      Upon a successful registeration, the controller successfully increases the number of devices in the network.
+    }
+  \end{figure}    
 \end{itemize}
 
 \section{Conclusion}
