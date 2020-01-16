@@ -13,6 +13,7 @@
 \renewcommand{\ref}{\Cref}
 \addto\captionsenglish{\renewcommand{\figurename}{Figure~}}
 \addto\captionsenglish{\renewcommand{\tablename}{TABLE~}}
+\renewcommand{\floatpagefraction}{1.0}
 
 \def\thesisnumber{2019-16-02}
 \title{マルチユーザ赤外線通信の設計}
@@ -111,7 +112,7 @@ Both operate with its oscillator; however, for terminals phase synchronisation i
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{NL-crop.pdf}
+  \includegraphics[width=.7\linewidth]{NL-crop.pdf}
   \caption{\label{fig:controller}
     Illustration of controller.
   }
@@ -119,7 +120,7 @@ Both operate with its oscillator; however, for terminals phase synchronisation i
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{UE-crop.pdf}
+  \includegraphics[width=.7\linewidth]{UE-crop.pdf}
   \caption{\label{fig:terminal}
     Illustration of terminal.
   }
@@ -133,18 +134,26 @@ Two evlaluations were done to validate the protocol.
 \item \textbf{Evaluation 1}, validated the open enviroment performance of the protocol.
   Using a terminal (Terminal A) and controller, I verified that the terminal registered to the network.
   Upon un-registration, I also verified that the unused frames were released.
-  \ref{fig:register} shows the registering process.
-  \begin{figure}[tb]
-    \centering
-    \includegraphics[width=.6\linewidth]{register-crop.pdf}
-    \caption{\label{fig:register}
-      Diagram of the registration process.
-      Upon successful registration, the controller successfully increases the number of devices in the network.
-    }
-  \end{figure}
+  %% \ref{fig:register} shows the registering process.
+  %% \begin{figure}[tb]
+  %%   \centering
+  %%   \includegraphics[width=.6\linewidth]{register-crop.pdf}
+  %%   \caption{\label{fig:register}
+  %%     Diagram of the registration process.
+  %%     Upon successful registration, the controller successfully increases the number of devices in the network.
+  %%   }
+  %% \end{figure}
 \item \textbf{Evaluation 2}, validated the multiuser performance of the protocol.
   Using two terminals (Terminal A, B) with an established session, I verified that two terminals could simultaneously transmit/receive data.
   \ref{fig:message} shows the messaging process.
+
+    \begin{figure*}[!tb]
+      \centering
+      \includegraphics[width=\linewidth]{messaging_0-crop.pdf}
+      \caption{\label{fig:messaging}
+        Waveforms of on the fly messaging.
+      }
+    \end{figure*}    
   
     \begin{figure}[tb]
     \centering
@@ -153,7 +162,7 @@ Two evlaluations were done to validate the protocol.
       Diagram of the telecommunication.
       Using the established session, Terminal A and B transmits ``Foo'' and ``Bar'' simultaneously to each other.
     }
-  \end{figure}
+    \end{figure}
 \end{itemize}
 
 \section{Conclusion}
