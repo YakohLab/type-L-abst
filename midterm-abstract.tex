@@ -25,15 +25,15 @@ One common lightwave telecommunication method is infrared, widely used in remote
 Although, since infrared communication runs at a low modulation frequency of \SI{38}{kHz}, and a much lower symbol rate, obtaining a compromisable data rate is a challenge.
 Ever since the improvement of radio frequency (RF) telecommunication, it has not drawn much attention.
 
-Nonetheless, we argue that however, it was impossible with any existing protocols, by carefully designing a new protocol, we can achieve a reasonable data rate, with multiuser characteristics.
+Nonetheless, despite it was impossible with any existing protocols, by carefully designing a new protocol, a reasonable data rate, with multiuser characteristics can be achieved.
 Multiuser characteristics are essential when considering an open environment, where many terminals enter and leave the communication channel on the fly.
 
-In this paper, we propose a tightly packed frame protocol, enabling multiuser access in an open environment.
-Our system is implemented as a system on a chip (SoC), enabling us an appropriate balance of performance and flexibility.
+The proposal in this thesis is a tightly packed frame protocol, enabling multiuser access in an open environment.
+The system is implemented as a system on a chip (SoC), enabling us an appropriate balance of performance and flexibility.
 
 \section{Conventional protocols}
 To today, many proposed their protocol for their intended use, each with advantages and disadvantages.
-Here, we present protocols we referred upon designing our protocol.
+Here, the present protocols referred upon designing protocol is listed.
 
 \subsection{Time division multiple access}
 Time-division multiple access (TDMA) is a protocol, which assigns ``time-slot'' exclusive to each terminal, along with a ``guard-time'' between each time-slot to avoid overlapping of transmission, when two or more users have different propagation delays.
@@ -53,7 +53,7 @@ However, since each terminal in EtherCAT must be pre-configured, it is also usel
 Also, EtherCAT is a protocol for wired telecommunication, requiring a daisy-chain connection.
 
 \section{Proposed protocol}
-Our protocol is a connection-oriented full-duplex protocol, using the lightwave channel.
+The protocol is a connection-oriented full-duplex protocol, using the lightwave channel.
 It involves several terminals, which communicate simultaneously with each other using the established session, and a central controller, to manage the network and sessions, as illustrated in \ref{fig:overview}.
 
 \begin{figure}[tb]
@@ -64,11 +64,11 @@ It involves several terminals, which communicate simultaneously with each other 
   }
 \end{figure}
 
-The controller gives each terminal in its network two blocks, a unit of communication used in our protocol.
+The controller gives each terminal in its network two blocks, a unit of communication used in the protocol.
 One is used to exchange data from the terminal to the controller (uplink).
 The other is for the controller to the terminal (downlink).
 Each terminal receives data from the given downlink block, and writes to its uplink block on the fly, building a single frame structure, as shown in \ref{fig:frame}, as a whole network.
-This behaviour, based on EtherCAT, is to relish the decreased delay EtherCAT offers since each terminal does not have to process the entire frame to send its data.
+This behaviour, based on EtherCAT, is to relish the decreased delay EtherCAT offers since each terminal does not have to process the entire frame to transmit its data.
 \begin{figure}[tb]
   \centering
   \includegraphics[width=\linewidth]{frame-crop.pdf}
@@ -77,11 +77,11 @@ This behaviour, based on EtherCAT, is to relish the decreased delay EtherCAT off
   }
 \end{figure}
 
-Since we are dealing with open environments, each terminal must be able to join/leave the network and establish/demolish its sessions.
-By sending requests to the controller (uplink request), using a contention-window-like request section, introduced for this specific purpose, we achieve an open environment behaviour.
+Since dealing with open environments, each terminal must be able to join/leave the network and establish/demolish its sessions.
+By transmitting requests to the controller (uplink request), using a contention-window-like request section, introduced for this specific purpose, I achieve an open environment behaviour.
 All requests are defined in the request protocol, along with an identifier to reduce transmission, as shown in \ref{tab:request}.
 The controller processes these requests and responds (downlink request) along with additional information.
-We split the request section, for the downlink request not to collide with the uplink request since downlink requests transmit information to maintain a stable, predictable network.
+The protocol splits the request section, for the downlink request not to collide with the uplink request since downlink requests transmit information to maintain a stable, predictable network.
 On the other side, uplink requests are vulnerable to collisions; if many terminals make uplink requests at the same time, requests will collide and lead to unsuccessful uplink requests.
 This problem is solved by each terminal retrying the same request after waiting a random amount of time.
 \begin{table}[tb]
@@ -131,8 +131,8 @@ The Processing System (ARM\textregistered -based processor) takes care of the re
 Two evlaluations were done to validate the protocol.
 \begin{itemize}
 \item \textbf{Evaluation 1}, validated the open enviroment performance of the protocol.
-  Using a terminal (Terminal A) and controller, we verified that the terminal registered to the network.
-  Upon un-registration, we also verified that the unused frames were released.
+  Using a terminal (Terminal A) and controller, I verified that the terminal registered to the network.
+  Upon un-registration, I also verified that the unused frames were released.
   \ref{fig:register} shows the registering process.
   \begin{figure}[tb]
     \centering
@@ -143,7 +143,7 @@ Two evlaluations were done to validate the protocol.
     }
   \end{figure}
 \item \textbf{Evaluation 2}, validated the multiuser performance of the protocol.
-  Using two terminals (Terminal A, B) with an established session, we verified that two terminals could simultaneously send/receive data.
+  Using two terminals (Terminal A, B) with an established session, I verified that two terminals could simultaneously transmit/receive data.
   \ref{fig:message} shows the messaging process.
   
     \begin{figure}[tb]
@@ -151,14 +151,14 @@ Two evlaluations were done to validate the protocol.
     \includegraphics[width=\linewidth]{message-crop.pdf}
     \caption{\label{fig:message}
       Diagram of the telecommunication.
-      Using the established session, Terminal A and B sends ``Foo'' and ``Bar'' simultaneously to each other.
+      Using the established session, Terminal A and B transmits ``Foo'' and ``Bar'' simultaneously to each other.
     }
   \end{figure}
 \end{itemize}
 
 \section{Conclusion}
 This thesis presented a new protocol, aimed to enable multiuser telecommunication in an open environment with low symbol rate systems.
-We introduced a central controller to enable multiuser specifications.
-To decrease the delay by sending multiple messages for communication, we send/receive messages on the fly.
-To realise these specifications, we implemented the system to an SoC and verified that it met the specifications.
+I introduced a central controller to enable multiuser specifications.
+To decrease the delay by transmitting multiple messages for communication, transmitting/receiving messages on the fly.
+ The system was implemented to an SoC To realise these specifications, and verified that it met the specifications.
 \end{document}
