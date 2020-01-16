@@ -21,8 +21,8 @@
 \begin{document}
 \maketitle
 \section{Introduction}
-One common lightwave telecommunication method is infrared, widely used in remote controllers for consumer electronics, and previously used as an intre-device communication.
-Although, since infrared communication runs at a low modulation frequency of \SI{38}{kHz}, obtaining a compromisable data rate is a challenge. 
+One common lightwave telecommunication method is infrared, widely used in remote controllers for consumer electronics.
+Although, since infrared communication runs at a low modulation frequency of \SI{38}{kHz}, and a much lower symbol rate, obtaining a compromisable data rate is a challenge.
 Ever since the improvement of radio frequency (RF) telecommunication, it has not drawn much attention.
 
 Nonetheless, we argue that however, it was impossible with any existing protocols, by carefully designing a new protocol, we can achieve a reasonable data rate, with multiuser characteristics.
@@ -36,8 +36,8 @@ To today, many proposed their protocol for their intended use, each with advanta
 Here, we present protocols we referred upon designing our protocol.
 
 \subsection{Time division multiple access}
-Time-division multiple access (TDMA) is a protocol, which assigns ``time-slot'' exclusive to each terminal, along with a ``guard-time'' between each time slot to avoid overlapping of transmission, when two or more users have different propagation delays.
-During the assigned time-slot, each terminal is allowed to do any kinds of operations.
+Time-division multiple access (TDMA) is a protocol, which assigns ``time-slot'' exclusive to each terminal, along with a ``guard-time'' between each time-slot to avoid overlapping of transmission, when two or more users have different propagation delays.
+During the assigned time-slot, each terminal is allowed to communicate.
 
 However, since TDMA divides time, a synchronisation between terminals is required.
 Also, each terminal in TDMA must be pre-configured which time-slot to use, making it useless in open environments.
@@ -46,8 +46,8 @@ Also, each terminal in TDMA must be pre-configured which time-slot to use, makin
 Ethernet for Control Automation Technology (EtherCAT) is a protocol where a network controller controls the whole network.
 Data is interchanged by circulating frames transmitted by the controller in the network.
 Only when a frame arrives, each terminal is allowed to read/write data.
-After the node finished reading/writing, the node transmits the frame to the next node.
-By performing this read/write/transmit procedure are on-the-fly, high-speed, and real-time communication is possible.
+After the terminal finished reading/writing, it transmits the frame to the next.
+By performing this read/write/transmit procedure on-the-fly, high-speed.
 
 However, since each terminal in EtherCAT must be pre-configured, it is also useless in open environments.
 Also, EtherCAT is a protocol for wired telecommunication, requiring a daisy-chain connection.
@@ -64,12 +64,11 @@ It involves several terminals, which communicate simultaneously with each other 
   }
 \end{figure}
 
-The controller gives each terminal in the network two blocks, a unit of communication used in our protocol.
-One is used to exchange data between the terminal to the controller (uplink).
+The controller gives each terminal in its network two blocks, a unit of communication used in our protocol.
+One is used to exchange data from the terminal to the controller (uplink).
 The other is for the controller to the terminal (downlink).
 Each terminal receives data from the given downlink block, and writes to its uplink block on the fly, building a single frame structure, as shown in \ref{fig:frame}, as a whole network.
 This behaviour, based on EtherCAT, is to relish the decreased delay EtherCAT offers since each terminal does not have to process the entire frame to send its data.
-However, unlike EtherCAT, where all terminals have to are wired in a daisy chain, our protocol is wireless.
 \begin{figure}[tb]
   \centering
   \includegraphics[width=\linewidth]{frame-crop.pdf}
@@ -89,7 +88,7 @@ This problem is solved by each terminal retrying the same request after waiting 
   \centering
   \small
   \caption{\label{tab:request}
-    Table of request protocols.
+    Request protocols.
   }
   \begin{tabularx}{\linewidth}{ccl}
     \hline
@@ -97,17 +96,17 @@ This problem is solved by each terminal retrying the same request after waiting 
     \hline \hline
     R & Register & Join network\\
     U & Unregister & Leave network\\
-    D & Connect & Connect to another terminal\\
-    H & Disconnect & Break current connection\\
+    D & Connect & Establish session\\
+    H & Disconnect & Demolish current session\\
     \hline
   \end{tabularx}
 \end{table}
 
 \section{Implementation}
-To satisfy the above-mentioned protocol, a System on a Chip (SoC) implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
+To satisfy the above-mentioned protocol, a SoC implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
 
 The controller and terminal is shown in \ref{fig:controller} and \ref{fig:terminal} respectivly.
-Both the controller and terminal operates data by opening the data gate at the exact time.
+Both the controller and terminal operate data by opening the gate at the exact time.
 Both operate with its oscillator; however, for terminals phase synchronisation is necessary.
 
 \begin{figure}[tb]
@@ -126,11 +125,10 @@ Both operate with its oscillator; however, for terminals phase synchronisation i
   }
 \end{figure}
 
-The Processing System (ARM\textregistered -based processor) takes care of the received data, where for the controller and terminal are processed.
-%% as \ref{fig:controller-proc} and \ref{fig:terminal-proc}, respectively.
+The Processing System (ARM\textregistered -based processor) takes care of the received data, where data are processed.
 
 \section{Evaluation}
-Two elaluation was done to validate the protocol.
+Two evlaluations were done to validate the protocol.
 \begin{itemize}
 \item \textbf{Evaluation 1}, validated the open enviroment performance of the protocol.
   Using a terminal (Terminal A) and controller, we verified that the terminal registered to the network.
@@ -138,28 +136,29 @@ Two elaluation was done to validate the protocol.
   \ref{fig:register} shows the registering process.
   \begin{figure}[tb]
     \centering
-    \includegraphics[width=.75\linewidth]{register-crop.pdf}
+    \includegraphics[width=.6\linewidth]{register-crop.pdf}
     \caption{\label{fig:register}
       Diagram of the registration process.
       Upon successful registration, the controller successfully increases the number of devices in the network.
     }
   \end{figure}
 \item \textbf{Evaluation 2}, validated the multiuser performance of the protocol.
-  Using two terminals with an established session, we verified that two terminals could simultaneously send/receive datum.
+  Using two terminals (Terminal A, B) with an established session, we verified that two terminals could simultaneously send/receive data.
+  \ref{fig:message} shows the messaging process.
+  
     \begin{figure}[tb]
     \centering
     \includegraphics[width=\linewidth]{message-crop.pdf}
-    \caption{\label{fig:register}
-      Diagram of the registration process.
-      Upon a successful registeration, the controller successfully increases the number of devices in the network.
+    \caption{\label{fig:message}
+      Diagram of the telecommunication.
+      Using the established session, Terminal A and B sends ``Foo'' and ``Bar'' simultaneously to each other.
     }
-  \end{figure}    
+  \end{figure}
 \end{itemize}
 
 \section{Conclusion}
-This thesis presented a new protocol, based on TDMA and EtherCAT, aimed to enable multiuser telecommunication in an open environment with low symbol rate systems.
+This thesis presented a new protocol, aimed to enable multiuser telecommunication in an open environment with low symbol rate systems.
 We introduced a central controller to enable multiuser specifications.
-To maximise the bit efficiency, we removed the guard time and headers for each terminal.
-To realise these specifications, we implemented the system to an SoC.
-We validated the implementation and verified that the specifications meet the protocol specifications.
+To decrease the delay by sending multiple messages for communication, we send/receive messages on the fly.
+To realise these specifications, we implemented the system to an SoC and verified that it met the specifications.
 \end{document}
