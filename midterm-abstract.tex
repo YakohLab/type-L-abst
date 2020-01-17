@@ -48,7 +48,7 @@ Ethernet for Control Automation Technology (EtherCAT) is a protocol where a netw
 Data is interchanged by circulating frames transmitted by the controller in the network.
 Only when a frame arrives, each terminal is allowed to read/write data.
 After the terminal finished reading/writing, it transmits the frame to the next.
-By performing this read/write/transmit procedure on-the-fly, high-speed.
+By performing this read/write/transmit procedure on-the-fly, high-speed communication is possible.
 
 However, since each terminal in EtherCAT must be pre-configured, it is also useless in open environments.
 Also, EtherCAT is a protocol for wired telecommunication, requiring a daisy-chain connection.
@@ -72,19 +72,12 @@ Each terminal receives data from the given downlink block, and writes to its upl
 This behaviour, based on EtherCAT, is to relish the decreased delay EtherCAT offers since each terminal does not have to process the entire frame to transmit its data.
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=\linewidth]{frame-crop.pdf}
+  \includegraphics[width=.8\linewidth]{frame-crop.pdf}
   \caption{\label{fig:frame}
     Illustration of frame used in the protocol.
   }
 \end{figure}
 
-Since dealing with open environments, each terminal must be able to join/leave the network and establish/demolish its sessions.
-By transmitting requests to the controller (uplink request), using a contention-window-like request section, introduced for this specific purpose, I achieve an open environment behaviour.
-All requests are defined in the request protocol, along with an identifier to reduce transmission, as shown in \ref{tab:request}.
-The controller processes these requests and responds (downlink request) along with additional information.
-The protocol splits the request section, for the downlink request not to collide with the uplink request since downlink requests transmit information to maintain a stable, predictable network.
-On the other side, uplink requests are vulnerable to collisions; if many terminals make uplink requests at the same time, requests will collide and lead to unsuccessful uplink requests.
-This problem is solved by each terminal retrying the same request after waiting a random amount of time.
 \begin{table}[tb]
   \centering
   \small
@@ -103,6 +96,15 @@ This problem is solved by each terminal retrying the same request after waiting 
   \end{tabularx}
 \end{table}
 
+Since dealing with open environments, each terminal must be able to join/leave the network and establish/demolish its sessions.
+For this purpose, a contention-window-like request section is introduced.
+An open environment behaviour is achieved by transmitting requests to the controller (uplink request) using the request section.
+All requests are defined in the request protocol, along with an identifier to reduce transmission, as shown in \ref{tab:request}.
+The controller processes these requests and responds (downlink request) along with additional information.
+The protocol splits the request section, for the downlink request not to collide with the uplink request since downlink requests transmit information to maintain a stable, predictable network.
+On the other side, uplink requests are vulnerable to collisions; if many terminals make uplink requests at the same time, requests will collide and lead to unsuccessful uplink requests.
+This problem is solved by each terminal retrying the same request after waiting a random amount of frames.
+
 \section{Implementation}
 To satisfy the above-mentioned protocol, a SoC implementation, especially Zynq\textregistered -7000 SoC from Xilinx\textregistered, was chosen.
 
@@ -110,30 +112,49 @@ The controller and terminal is shown in \ref{fig:controller} and \ref{fig:termin
 Both the controller and terminal operate data by opening the gate at the exact time.
 Both operate with its oscillator; however, for terminals phase synchronisation is necessary.
 
-\begin{figure}[tb]
+\begin{figure*}[!t]
   \centering
-  \includegraphics[width=.7\linewidth]{NL-crop.pdf}
-  \caption{\label{fig:controller}
-    Illustration of controller.
-  }
-\end{figure}
+  \begin{minipage}[b]{.45\linewidth}
+    \centering
+    \includegraphics[width=.75\linewidth]{NL-crop.pdf}
+    \caption{\label{fig:controller}
+      Illustration of controller.
+    }
+  \end{minipage}\quad
+  \begin{minipage}[b]{.45\linewidth}
+    \centering
+    \includegraphics[width=.75\linewidth]{UE-crop.pdf}
+    \caption{\label{fig:terminal}
+      Illustration of terminal.
+    }
+  \end{minipage}\\[5ex]
+  \begin{minipage}{\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{messaging_0-crop.pdf}
+    \caption{\label{fig:messaging}
+      Waveforms of the messaging process.
+      The controller sends the preamble and the header, then Terminal A and B write their message on the fly.
+    }
+  \end{minipage}
+\end{figure*}
 
 \begin{figure}[tb]
   \centering
-  \includegraphics[width=.7\linewidth]{UE-crop.pdf}
-  \caption{\label{fig:terminal}
-    Illustration of terminal.
+  \includegraphics[width=\linewidth]{message-crop.pdf}
+  \caption{\label{fig:message}
+    Diagram of the telecommunication.
+    Using the established session, Terminal A and B transmit ``Foo'' and ``Bar'' simultaneously to each other.
   }
 \end{figure}
 
 The Processing System (ARM\textregistered -based processor) takes care of the received data, where data are processed.
 
 \section{Evaluation}
-Two evlaluations were done to validate the protocol.
+To validate the protocol two evaluations were done.
 \begin{itemize}
-\item \textbf{Evaluation 1}, validated the open enviroment performance of the protocol.
-  Using a terminal (Terminal A) and controller, I verified that the terminal registered to the network.
-  Upon un-registration, I also verified that the unused frames were released.
+\item \textbf{Evaluation 1}, validated the open environmental performance of the protocol, using a terminal (Terminal A) and controller.
+The terminal successfully registered to the network.
+  Upon un-registration, the unused blocks were released.
   %% \ref{fig:register} shows the registering process.
   %% \begin{figure}[tb]
   %%   \centering
@@ -143,31 +164,13 @@ Two evlaluations were done to validate the protocol.
   %%     Upon successful registration, the controller successfully increases the number of devices in the network.
   %%   }
   %% \end{figure}
-\item \textbf{Evaluation 2}, validated the multiuser performance of the protocol.
-  Using two terminals (Terminal A, B) with an established session, I verified that two terminals could simultaneously transmit/receive data.
-  \ref{fig:message} shows the messaging process.
-
-    \begin{figure*}[!tb]
-      \centering
-      \includegraphics[width=\linewidth]{messaging_0-crop.pdf}
-      \caption{\label{fig:messaging}
-        Waveforms of on the fly messaging.
-      }
-    \end{figure*}    
-  
-    \begin{figure}[tb]
-    \centering
-    \includegraphics[width=\linewidth]{message-crop.pdf}
-    \caption{\label{fig:message}
-      Diagram of the telecommunication.
-      Using the established session, Terminal A and B transmits ``Foo'' and ``Bar'' simultaneously to each other.
-    }
-    \end{figure}
+\item \textbf{Evaluation 2}, validated the multiuser performance of the protocol, using two terminals (Terminal A, B) with an established session.
+Two terminals could successfully simultaneously transmit/receive data.
+  \ref{fig:messaging} and \ref{fig:message} shows the on the fly messaging, and the messaging process, respectively.
 \end{itemize}
-
 \section{Conclusion}
 This thesis presented a new protocol, aimed to enable multiuser telecommunication in an open environment with low symbol rate systems.
-I introduced a central controller to enable multiuser specifications.
+A central controller was introduced to enable multiuser specifications.
 To decrease the delay by transmitting multiple messages for communication, transmitting/receiving messages on the fly.
- The system was implemented to an SoC To realise these specifications, and verified that it met the specifications.
+The system was implemented to an SoC to realise these specifications and verified that it met the specifications.
 \end{document}
